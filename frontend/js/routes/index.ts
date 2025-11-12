@@ -1,12 +1,16 @@
 import { createBrowserRouter } from 'react-router';
-
-import { usersLoader } from '@/js/loaders';
-import Home from '@/js/pages/Home';
-import Users from '@/js/pages/Users';
+import CandidateDetail from '@/js/pages/CandidateDetail';
+import Dashboard from '@/js/pages/Dashboard';
+import LoginPage from '@/js/pages/LoginPage';
+import SignupPage from '@/js/pages/SignupPage';
+import UploadResumes from '@/js/pages/UploadResumes';
 
 const router = createBrowserRouter([
-  { index: true, Component: Home },
-  { path: 'users', Component: Users, loader: usersLoader },
+  { index: true, Component: Dashboard },
+  { path: 'upload', Component: UploadResumes },
+  { path: 'candidates/:id', Component: CandidateDetail },
+  { path: 'login', Component: LoginPage },
+  { path: 'signup', Component: SignupPage },
 ]);
 
 export default router;

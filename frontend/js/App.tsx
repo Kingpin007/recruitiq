@@ -3,9 +3,10 @@ import { parse as cookieParse } from 'cookie';
 import { RouterProvider } from 'react-router/dom';
 
 import { client } from '@/js/api/client.gen';
+import { ThemeProvider } from '@/js/components/theme-provider';
 import router from '@/js/routes';
 
-client.instance.interceptors.request.use((request) => {
+client.interceptors.request.use((request) => {
   const { csrftoken } = cookieParse(document.cookie);
   if (request.headers && csrftoken) {
     request.headers['X-CSRFTOKEN'] = csrftoken;
@@ -15,7 +16,9 @@ client.instance.interceptors.request.use((request) => {
 
 const App = () => (
   <Sentry.ErrorBoundary fallback={<p>An error has occurred</p>}>
-    <RouterProvider router={router} />
+    <ThemeProvider defaultTheme="system" storageKey="recruitiq-ui-theme">
+      <RouterProvider router={router} />
+    </ThemeProvider>
   </Sentry.ErrorBoundary>
 );
 

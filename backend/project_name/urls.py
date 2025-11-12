@@ -24,6 +24,8 @@ urlpatterns = [
     path("admin/defender/", include("defender.urls")),
     path("jsreverse/", django_js_reverse.views.urls_js, name="js_reverse"),
     path("api/", include(router.urls), name="api"),
+    path("api/recruitment/", include("recruitment.urls"), name="recruitment"),
+    path("accounts/", include("allauth.urls")),
     # drf-spectacular
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path(

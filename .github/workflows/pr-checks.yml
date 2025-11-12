@@ -1,0 +1,23 @@
+name: PR Checks
+
+on:
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  backend:
+    name: Backend Checks
+    uses: ./.github/workflows/backend-ci.yml
+
+  frontend:
+    name: Frontend Checks
+    uses: ./.github/workflows/frontend-ci.yml
+
+  all-checks-passed:
+    name: All Checks Passed
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+    steps:
+      - name: All checks passed
+        run: echo "All PR checks passed successfully!"
+

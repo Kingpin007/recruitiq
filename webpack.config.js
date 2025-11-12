@@ -11,7 +11,7 @@ module.exports = (env, argv) => {
   const nodeModulesDir = path.resolve(__dirname, 'node_modules');
   const localhostOutput = {
     path: path.resolve('./frontend/webpack_bundles/'),
-    publicPath: 'http://localhost:3000/frontend/webpack_bundles/',
+    publicPath: 'http://localhost:8080/frontend/webpack_bundles/',
     filename: '[name].js',
   };
   const productionOutput = {
@@ -28,7 +28,7 @@ module.exports = (env, argv) => {
       hot: true,
       historyApiFallback: true,
       host: '0.0.0.0',
-      port: 3000,
+      port: 8080,
       // Allow CORS requests from the Django dev server domain:
       headers: { 'Access-Control-Allow-Origin': '*' },
     },

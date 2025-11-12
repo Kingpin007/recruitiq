@@ -1,11 +1,10 @@
 [tool.poetry]
-name = "{{project_name}}"
+name = "recruitiq"
 version = "0.1.0"
-description = "Django 5, React, Tailwind 4 with Python 3 and webpack project boilerplate"
-authors = ["Vinta Software <contact@vinta.com.br>"]
+description = "AI-Powered Recruitment System"
+authors = ["RecruitIQ Team"]
 license = "MIT"
 readme = "README.md"
-package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.12"
@@ -32,12 +31,26 @@ django-csp = "^3.7"
 django-defender = "^0.9.7"
 django-guid = "^3.4.0"
 drf-spectacular = "^0.27.2"
+openai = "^1.0.0"
+PyPDF2 = "^3.0.0"
+python-telegram-bot = "^21.0"
+PyGithub = "^2.1.0"
+boto3 = "^1.34.0"
+django-storages = "^1.14.0"
+django-allauth = "^0.61.0"
+reportlab = "^4.0.0"
+python-docx = "^1.1.0"
+pytest = "^8.0.0"
+pytest-django = "^4.8.0"
+pytest-cov = "^4.1.0"
+pytest-asyncio = "^0.23.0"
 
 [tool.poetry.group.dev.dependencies]
 coverage = "^7.2.7"
 model-bakery = "^1.12.0"
 pre-commit = "^3.3.3"
 ruff = "^0.1.8"
+pyrefly = "^0.1.0"
 
 [build-system]
 requires = ["poetry-core>=1.2.0"]

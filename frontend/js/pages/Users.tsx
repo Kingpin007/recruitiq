@@ -1,6 +1,6 @@
 import { Link, useLoaderData } from 'react-router';
 
-import { PaginatedUserList } from '@/js/api';
+import type { PaginatedUserList } from '@/js/api';
 import { TopNav } from '@/js/components';
 import { makeLink } from '@/js/utils';
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import DjangoImgSrc from '@/assets/images/django-logo-negative.png';
 import { restRestCheckRetrieve } from '@/js/api';

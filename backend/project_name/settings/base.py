@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sites",
     "django_js_reverse",
     "webpack_loader",
     "import_export",
@@ -39,8 +40,12 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "defender",
     "django_guid",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
     "common",
     "users",
+    "recruitment",
 ]
 
 MIDDLEWARE = [
@@ -54,12 +59,13 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
     "csp.middleware.CSPMiddleware",
     "defender.middleware.FailedLoginMiddleware",
     "django_guid.middleware.guid_middleware",
 ]
 
-ROOT_URLCONF = "{{project_name}}.urls"
+ROOT_URLCONF = "project_name.urls"
 
 TEMPLATES = [
     {
@@ -87,7 +93,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "{{project_name}}.wsgi.application"
+WSGI_APPLICATION = "project_name.wsgi.application"
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -135,12 +141,43 @@ USE_TZ = True
 
 STATICFILES_DIRS = (base_dir_join("../frontend", "webpack_bundles"),)
 
+# Static files (CSS, JavaScript, Images)
+STATIC_URL = "/static/"
+STATIC_ROOT = base_dir_join("staticfiles")
+
+# Media files
+MEDIA_URL = "/media/"
+MEDIA_ROOT = base_dir_join("media")
+
+# AWS S3 Configuration
+USE_S3 = config("USE_S3", default=False, cast=bool)
+
+if USE_S3:
+    # AWS settings
+    AWS_ACCESS_KEY_ID = config("AWS_ACCESS_KEY_ID")
+    AWS_SECRET_ACCESS_KEY = config("AWS_SECRET_ACCESS_KEY")
+    AWS_STORAGE_BUCKET_NAME = config("AWS_STORAGE_BUCKET_NAME")
+    AWS_S3_REGION_NAME = config("AWS_S3_REGION_NAME", default="us-east-1")
+    AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
+    AWS_S3_OBJECT_PARAMETERS = {
+        "CacheControl": "max-age=86400",
+    }
+    AWS_DEFAULT_ACL = None
+    AWS_S3_FILE_OVERWRITE = False
+    AWS_QUERYSTRING_AUTH = True
+    AWS_S3_SIGNATURE_VERSION = "s3v4"
+
+    # S3 public media settings
+    PUBLIC_MEDIA_LOCATION = "media"
+    MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/"
+    DEFAULT_FILE_STORAGE = "recruitment.storage_backends.PublicMediaStorage"
+
 # Webpack
 WEBPACK_LOADER = {
     "DEFAULT": {
         "CACHE": False,  # on DEBUG should be False
         "BUNDLE_DIR_NAME": "",
-        "STATS_FILE": base_dir_join("../webpack-stats.json"),
+        "STATS_FILE": os.environ.get("WEBPACK_STATS_FILE", base_dir_join("../webpack-stats.json")),
         "POLL_INTERVAL": 0.1,
         "IGNORE": [r".+\.hot-update.js", r".+\.map"],
     }
@@ -251,3 +288,16 @@ DEFENDER_LOGIN_FAILURE_LIMIT = 3
 DEFENDER_COOLOFF_TIME = 300  # 5 minutes
 DEFENDER_LOCKOUT_TEMPLATE = "defender/lockout.html"
 DEFENDER_REDIS_URL = config("REDIS_URL")
+
+# Django-allauth
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
+
+ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_EMAIL_VERIFICATION = "optional"
+LOGIN_REDIRECT_URL = "/"
+ACCOUNT_LOGOUT_REDIRECT_URL = "/"
