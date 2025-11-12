@@ -223,6 +223,7 @@ COMMIT_SHA = config("RENDER_GIT_COMMIT", default="")
 # https://github.com/vintasoftware/safari-samesite-cookie-issue
 CSRF_COOKIE_SAMESITE = None
 SESSION_COOKIE_SAMESITE = None
+CSRF_COOKIE_HTTPONLY = False  # Allow JavaScript to read CSRF cookie
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
@@ -298,6 +299,8 @@ AUTHENTICATION_BACKENDS = [
 ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None  # No username field in custom User model
 ACCOUNT_EMAIL_VERIFICATION = "optional"
 LOGIN_REDIRECT_URL = "/"
 ACCOUNT_LOGOUT_REDIRECT_URL = "/"
+ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = True

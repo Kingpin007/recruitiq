@@ -1,4 +1,5 @@
 import { AppSidebar } from '@/js/components/app-sidebar';
+import { ProtectedRoute } from '@/js/components/ProtectedRoute';
 import { ThemeToggle } from '@/js/components/theme-toggle';
 import {
   Breadcrumb,
@@ -18,36 +19,38 @@ interface MainLayoutProps {
 
 export function MainLayout({ children, breadcrumbs }: MainLayoutProps) {
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b">
-          <SidebarTrigger />
-          <Separator orientation="vertical" className="h-4 ml-2" />
-          {breadcrumbs && breadcrumbs.length > 0 && (
-            <Breadcrumb>
-              <BreadcrumbList>
-                {breadcrumbs.map((crumb, index) => (
-                  <div key={crumb.label}>
-                    {index > 0 && <BreadcrumbSeparator />}
-                    <BreadcrumbItem>
-                      {crumb.href ? (
-                        <BreadcrumbLink href={crumb.href}>{crumb.label}</BreadcrumbLink>
-                      ) : (
-                        <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
-                      )}
-                    </BreadcrumbItem>
-                  </div>
-                ))}
-              </BreadcrumbList>
-            </Breadcrumb>
-          )}
-          <div className="ml-auto">
-            <ThemeToggle />
-          </div>
-        </header>
-        <div className="flex flex-1 flex-col gap-4 py-6 pr-6">{children}</div>
-      </SidebarInset>
-    </SidebarProvider>
+    <ProtectedRoute>
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarInset>
+          <header className="flex h-16 shrink-0 items-center gap-2 border-b">
+            <SidebarTrigger />
+            <Separator orientation="vertical" className="h-4 ml-2" />
+            {breadcrumbs && breadcrumbs.length > 0 && (
+              <Breadcrumb>
+                <BreadcrumbList>
+                  {breadcrumbs.map((crumb, index) => (
+                    <div key={crumb.label}>
+                      {index > 0 && <BreadcrumbSeparator />}
+                      <BreadcrumbItem>
+                        {crumb.href ? (
+                          <BreadcrumbLink href={crumb.href}>{crumb.label}</BreadcrumbLink>
+                        ) : (
+                          <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
+                        )}
+                      </BreadcrumbItem>
+                    </div>
+                  ))}
+                </BreadcrumbList>
+              </Breadcrumb>
+            )}
+            <div className="ml-auto">
+              <ThemeToggle />
+            </div>
+          </header>
+          <div className="flex flex-1 flex-col gap-4 py-6 pr-6">{children}</div>
+        </SidebarInset>
+      </SidebarProvider>
+    </ProtectedRoute>
   );
 }

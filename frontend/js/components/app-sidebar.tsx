@@ -6,6 +6,7 @@ import {
   Settings2,
   Upload,
   Users,
+  LogIn,
 } from 'lucide-react';
 
 import { NavMain } from '@/js/components/nav-main';
@@ -16,65 +17,63 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
 } from '@/js/components/ui/sidebar';
+import { useAuth } from '@/js/contexts/AuthContext';
 
-// This is sample data.
-const data = {
-  user: {
-    name: 'Admin User',
-    email: 'admin@recruitiq.com',
-    avatar: '/avatars/admin.jpg',
+const navMain = [
+  {
+    title: 'Dashboard',
+    url: '/',
+    icon: Home,
+    isActive: true,
   },
-  navMain: [
-    {
-      title: 'Dashboard',
-      url: '/',
-      icon: Home,
-      isActive: true,
-    },
-    {
-      title: 'Upload Resumes',
-      url: '/upload',
-      icon: Upload,
-    },
-    {
-      title: 'Candidates',
-      url: '/',
-      icon: Users,
-      items: [
-        {
-          title: 'All Candidates',
-          url: '/',
-        },
-        {
-          title: 'Pending Review',
-          url: '/?status=pending',
-        },
-        {
-          title: 'Interviews',
-          url: '/?recommendation=interview',
-        },
-      ],
-    },
-    {
-      title: 'Job Descriptions',
-      url: '/admin/recruitment/jobdescription/',
-      icon: BriefcaseIcon,
-    },
-    {
-      title: 'Reports',
-      url: '#',
-      icon: FileText,
-    },
-    {
-      title: 'Settings',
-      url: '#',
-      icon: Settings2,
-    },
-  ],
-}
+  {
+    title: 'Upload Resumes',
+    url: '/upload',
+    icon: Upload,
+  },
+  {
+    title: 'Candidates',
+    url: '/',
+    icon: Users,
+    items: [
+      {
+        title: 'All Candidates',
+        url: '/',
+      },
+      {
+        title: 'Pending Review',
+        url: '/?status=pending',
+      },
+      {
+        title: 'Interviews',
+        url: '/?recommendation=interview',
+      },
+    ],
+  },
+  {
+    title: 'Job Descriptions',
+    url: '/admin/recruitment/jobdescription/',
+    icon: BriefcaseIcon,
+  },
+  {
+    title: 'Reports',
+    url: '#',
+    icon: FileText,
+  },
+  {
+    title: 'Settings',
+    url: '#',
+    icon: Settings2,
+  },
+];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { user, isAuthenticated } = useAuth();
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -84,10 +83,28 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </div>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={navMain} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        {isAuthenticated && user ? (
+          <NavUser
+            user={{
+              name: user.username || user.email.split('@')[0],
+              email: user.email,
+            }}
+          />
+        ) : (
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton size="lg" asChild>
+                <a href="/login">
+                  <LogIn className="h-4 w-4" />
+                  <span>Login</span>
+                </a>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        )}
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

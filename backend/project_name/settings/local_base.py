@@ -29,10 +29,8 @@ CELERY_BROKER_URL = config("CELERY_BROKER_URL", default="")
 CELERY_TASK_ALWAYS_EAGER = True
 CELERY_TASK_EAGER_PROPAGATES = True
 
-# Email settings for mailhog
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "mailhog"
-EMAIL_PORT = 1025
+# Email settings for development - print emails to console
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # Logging
 LOGGING = {

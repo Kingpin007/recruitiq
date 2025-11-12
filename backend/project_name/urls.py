@@ -25,6 +25,7 @@ urlpatterns = [
     path("jsreverse/", django_js_reverse.views.urls_js, name="js_reverse"),
     path("api/", include(router.urls), name="api"),
     path("api/recruitment/", include("recruitment.urls"), name="recruitment"),
+    path("api/auth/", include("users.api_urls"), name="auth"),
     path("accounts/", include("allauth.urls")),
     # drf-spectacular
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),

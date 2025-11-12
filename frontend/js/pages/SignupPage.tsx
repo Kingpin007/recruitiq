@@ -17,6 +17,7 @@ export default function SignupPage() {
               strokeLinejoin="round"
               className="size-4"
             >
+              <title>RecruitIQ Logo</title>
               <path d="M12 2L2 7l10 5 10-5-10-5z" />
               <path d="M2 17l10 5 10-5" />
               <path d="M2 12l10 5 10-5" />
@@ -25,12 +26,6 @@ export default function SignupPage() {
           RecruitIQ
         </a>
         <SignupForm />
-        <div className="text-center text-sm">
-          Already have an account?{' '}
-          <Link to="/login" className="underline underline-offset-4">
-            Log in
-          </Link>
-        </div>
       </div>
     </div>
   );

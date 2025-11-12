@@ -4,8 +4,8 @@ db.sqlite3-journal
 .DS_Store
 .env
 **/settings/local.py
-/staticfiles/*
-/mediafiles/*
+**/staticfiles/*
+**/mediafiles/*
 __pycache__/
 /.vscode/
 

@@ -1,4 +1,6 @@
 from django.views import generic
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.utils.decorators import method_decorator
 
 from drf_spectacular.utils import OpenApiExample, extend_schema
 from rest_framework import status, viewsets
@@ -9,6 +11,7 @@ from rest_framework.response import Response
 from .serializers import MessageSerializer
 
 
+@method_decorator(ensure_csrf_cookie, name='dispatch')
 class IndexView(generic.TemplateView):
     template_name = "common/index.html"
 

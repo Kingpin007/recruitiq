@@ -4,6 +4,7 @@ import { RouterProvider } from 'react-router/dom';
 
 import { client } from '@/js/api/client.gen';
 import { ThemeProvider } from '@/js/components/theme-provider';
+import { AuthProvider } from '@/js/contexts/AuthContext';
 import router from '@/js/routes';
 
 client.interceptors.request.use((request) => {
@@ -16,9 +17,11 @@ client.interceptors.request.use((request) => {
 
 const App = () => (
   <Sentry.ErrorBoundary fallback={<p>An error has occurred</p>}>
-    <ThemeProvider defaultTheme="system" storageKey="recruitiq-ui-theme">
-      <RouterProvider router={router} />
-    </ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider defaultTheme="system" storageKey="recruitiq-ui-theme">
+        <RouterProvider router={router} />
+      </ThemeProvider>
+    </AuthProvider>
   </Sentry.ErrorBoundary>
 );
 
