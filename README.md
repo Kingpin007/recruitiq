@@ -97,8 +97,6 @@ Required environment variables:
 - `DATABASE_URL`: PostgreSQL connection string
 - `REDIS_URL`: Redis connection string
 
-See [API_KEYS_SETUP.md](API_KEYS_SETUP.md) for detailed instructions on obtaining API keys.
-
 ### 3. Install Backend Dependencies
 
 ```bash
@@ -159,14 +157,11 @@ poetry run celery -A project_name worker --loglevel=info
 bun dev
 ```
 
-Access the application at http://localhost:8080
+Access the application at http://localhost:8000
 
 ## 📚 Documentation
 
 - **[ARCHITECTURE.md](ARCHITECTURE.md)** - System design and data flow diagrams
-- **[DEPLOYMENT.md](DEPLOYMENT.md)** - AWS deployment guide with Terraform
-- **[API_KEYS_SETUP.md](API_KEYS_SETUP.md)** - How to obtain all required API keys
-- **[AUTHENTICATION_SETUP.md](AUTHENTICATION_SETUP.md)** - OAuth providers setup guide
 - **[PROJECT_DETAILS.md](PROJECT_DETAILS.md)** - Original project requirements
 
 ## 🧪 Running Tests
@@ -254,108 +249,6 @@ See [DEPLOYMENT.md](DEPLOYMENT.md) for comprehensive production deployment instr
 - Dashboard load time: < 1 second
 - Support for 100+ concurrent users
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-All Pull Requests must pass:
-- Backend tests (pytest)
-- Frontend tests (Jest)
-- Linting (ruff, biome)
-- Type checking (pyrefly, tsc)
-
-## 📝 Project Structure
-
-```
-recruitiq/
-├── backend/
-│   ├── recruitment/           # Main recruitment app
-│   │   ├── models.py          # Data models
-│   │   ├── serializers.py     # DRF serializers
-│   │   ├── views.py           # API views
-│   │   ├── tasks.py           # Celery tasks
-│   │   ├── services/          # Business logic
-│   │   │   ├── ai_evaluator.py
-│   │   │   ├── github_analyzer.py
-│   │   │   ├── telegram_notifier.py
-│   │   │   └── document_generator.py
-│   │   └── tests/             # Tests
-│   ├── users/                 # User management
-│   └── project_name/          # Django settings
-├── frontend/
-│   ├── js/
-│   │   ├── components/        # React components
-│   │   │   ├── ui/            # Shadcn UI components
-│   │   │   ├── CandidateTable.tsx
-│   │   │   ├── EvaluationCard.tsx
-│   │   │   ├── FileUpload.tsx
-│   │   │   └── ProcessingStatus.tsx
-│   │   ├── pages/             # Page components
-│   │   │   ├── Dashboard.tsx
-│   │   │   ├── UploadResumes.tsx
-│   │   │   ├── CandidateDetail.tsx
-│   │   │   └── Login.tsx
-│   │   └── routes/            # Routing configuration
-│   └── css/                   # Styles
-├── terraform/                 # AWS infrastructure
-│   ├── main.tf
-│   ├── rds.tf
-│   ├── elasticache.tf
-│   ├── s3.tf
-│   └── ecs.tf
-├── .github/workflows/         # CI/CD pipelines
-├── docker-compose.yml         # Development containers
-└── docker-compose.prod.yml    # Production containers
-```
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-**Celery tasks not processing**:
-- Check Redis connection
-- Verify Celery worker is running
-- Check CloudWatch logs for errors
-
-**OpenAI API errors**:
-- Verify API key is correct
-- Check account has credits
-- Review rate limits
-
-**GitHub rate limits**:
-- Use authenticated requests (provide GITHUB_TOKEN)
-- Implement caching (already handled)
-- Wait for rate limit reset
-
-**S3 upload failures**:
-- Verify AWS credentials
-- Check bucket permissions
-- Ensure bucket exists in correct region
-
-See [DEPLOYMENT.md](DEPLOYMENT.md) for more troubleshooting tips.
-
 ## 📜 License
 
 This project is licensed under the MIT License - see the [LICENSE.txt](LICENSE.txt) file for details.
-
-## 🙏 Acknowledgments
-
-- Built on [Django React Boilerplate](https://github.com/vintasoftware/django-react-boilerplate) by Vinta Software
-- UI components from [Shadcn UI](https://ui.shadcn.com/)
-- Icons from [Lucide](https://lucide.dev/)
-- Powered by [OpenAI GPT-4](https://openai.com/)
-
-## 📧 Support
-
-For questions, issues, or feature requests, please:
-- Open an issue on GitHub
-- Contact the development team
-- Check existing documentation
-
----
-
-**Built with ❤️ for better hiring decisions**
