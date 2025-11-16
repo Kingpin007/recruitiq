@@ -140,21 +140,8 @@ JobDescription.objects.create(
 
 ### 7. Start Development Servers
 
-**Terminal 1 - Django Backend**:
 ```bash
-cd backend
-poetry run python manage.py runserver
-```
-
-**Terminal 2 - Celery Worker**:
-```bash
-cd backend
-poetry run celery -A project_name worker --loglevel=info
-```
-
-**Terminal 3 - Frontend**:
-```bash
-bun dev
+./start-local.sh
 ```
 
 Access the application at http://localhost:8000

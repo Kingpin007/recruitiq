@@ -201,6 +201,11 @@ class CandidateSerializer(serializers.ModelSerializer):
 class CandidateCreateSerializer(serializers.ModelSerializer):
     """Serializer for creating candidates."""
 
+    # Expose status in the response while preventing clients from setting it
+    # directly on creation. The model default ("pending") will be applied,
+    # and this field will be serialized as read-only.
+    status = serializers.CharField(read_only=True)
+
     class Meta:
         model = Candidate
         fields = [
@@ -209,6 +214,7 @@ class CandidateCreateSerializer(serializers.ModelSerializer):
             "phone",
             "linkedin_url",
             "job_description",
+            "status",
         ]
 
 

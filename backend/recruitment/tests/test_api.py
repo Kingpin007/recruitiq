@@ -183,6 +183,85 @@ class TestUploadResumesAPI:
         assert "candidates" in response.data
         assert len(response.data["candidates"]) == 1
 
+    def test_concurrent_uploads_are_isolated_per_candidate(
+        self, api_client, user, job_description, django_db_blocker, monkeypatch
+    ):
+        """
+        Demonstrate concurrent processing safety:
+
+        - Multiple resumes uploaded in a single request create distinct candidates.
+        - Each candidate is scheduled for processing exactly once.
+        - Each candidate receives its own celery_task_id and remains isolated.
+        """
+
+        from io import BytesIO
+
+        api_client.force_authenticate(user=user)
+        url = reverse("recruitment:candidate-upload-resumes")
+
+        # Prepare two different mock resume files to simulate multiple candidates.
+        pdf_content_1 = b"%PDF-1.4 mock pdf content candidate 1"
+        pdf_content_2 = b"%PDF-1.4 mock pdf content candidate 2"
+
+        file1 = BytesIO(pdf_content_1)
+        file1.name = "alice_resume.pdf"
+
+        file2 = BytesIO(pdf_content_2)
+        file2.name = "bob_resume.pdf"
+
+        scheduled_candidate_ids = []
+
+        class DummyResult:
+            def __init__(self, task_id):
+                self.id = task_id
+
+        # Patch the Celery task used by the upload endpoint so we can
+        # assert exactly which candidate IDs are scheduled for processing.
+        from recruitment import views as recruitment_views
+
+        def fake_delay(candidate_id):
+            scheduled_candidate_ids.append(candidate_id)
+            # Use deterministic task IDs so we can assert isolation.
+            return DummyResult(task_id=f"task-{candidate_id}")
+
+        monkeypatch.setattr(recruitment_views.process_candidate_task, "delay", fake_delay)
+
+        data = {
+            "resumes": [file1, file2],
+            "job_description_id": job_description.id,
+        }
+
+        response = api_client.post(url, data, format="multipart")
+
+        assert response.status_code == status.HTTP_201_CREATED
+        assert "candidates" in response.data
+        assert len(response.data["candidates"]) == 2
+
+        # Collect candidate IDs returned by the API.
+        returned_ids = {c["id"] for c in response.data["candidates"]}
+        assert len(returned_ids) == 2
+
+        # Each candidate should have been scheduled exactly once.
+        assert set(scheduled_candidate_ids) == returned_ids
+
+        # Reload candidates from the database to verify status and task IDs.
+        with django_db_blocker.unblock():
+            candidates = Candidate.objects.filter(id__in=returned_ids)
+
+        assert candidates.count() == 2
+
+        celery_ids = set()
+        for candidate in candidates:
+            # Status should have transitioned from "pending" to "processing"
+            # after scheduling, and each should have a unique task ID.
+            assert candidate.status == "processing"
+            assert candidate.celery_task_id == f"task-{candidate.id}"
+            celery_ids.add(candidate.celery_task_id)
+
+        # Ensure no two candidates share the same celery_task_id,
+        # demonstrating isolation between concurrent processing tasks.
+        assert len(celery_ids) == 2
+
 
 @pytest.mark.django_db
 class TestReprocessAPI:
