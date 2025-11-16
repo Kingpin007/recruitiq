@@ -14,7 +14,7 @@ interface Candidate {
   id: number;
   name: string;
   email: string;
-  status: 'pending' | 'processing' | 'completed' | 'failed';
+  status: 'pending' | 'processing' | 'completed' | 'failed' | 'processed' | 'rejected';
   job_description_title: string;
   created: string;
   evaluation?: {

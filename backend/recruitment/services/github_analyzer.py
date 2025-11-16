@@ -1,6 +1,6 @@
 import re
-import time
 from collections import Counter
+from datetime import datetime, timedelta, timezone
 
 from decouple import config
 from github import Github, GithubException, RateLimitExceededException
@@ -157,10 +157,10 @@ class GitHubAnalyzer:
         total_stars = sum(r["stars"] for r in original_repos)
         total_forks = sum(r["forks"] for r in original_repos)
 
-        # Determine active repos (updated in last year)
-        from datetime import datetime, timedelta
+        # Determine active repos (updated in last year). We normalise to UTC
+        # so we don't run into “offset-naive vs offset-aware” comparison errors.
 
-        one_year_ago = datetime.now() - timedelta(days=365)
+        one_year_ago = datetime.now(timezone.utc) - timedelta(days=365)
         active_repos = [
             r
             for r in repos_data

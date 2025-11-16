@@ -2,6 +2,7 @@ import { CheckCircle, Upload, Users, XCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { CandidateTable } from '@/js/components/CandidateTable';
+import { CandidateDetailSheet } from '@/js/components/CandidateDetailSheet';
 import { MainLayout } from '@/js/components/main-layout';
 import { Button } from '@/js/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/js/components/ui/card';
@@ -17,6 +18,8 @@ export default function Dashboard() {
     failed: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [selectedCandidateId, setSelectedCandidateId] = useState<number | null>(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   const fetchCandidates = async () => {
     try {
@@ -30,8 +33,8 @@ export default function Dashboard() {
         total: data.results.length,
         pending: data.results.filter((c: any) => c.status === 'pending').length,
         processing: data.results.filter((c: any) => c.status === 'processing').length,
-        completed: data.results.filter((c: any) => c.status === 'completed').length,
-        failed: data.results.filter((c: any) => c.status === 'failed').length,
+        completed: data.results.filter((c: any) => c.status === 'completed' || c.status === 'processed').length,
+        failed: data.results.filter((c: any) => c.status === 'failed' || c.status === 'rejected').length,
       };
       setStats(newStats);
       setLoading(false);
@@ -47,7 +50,8 @@ export default function Dashboard() {
   }, []);
 
   const handleViewDetails = (candidateId: number) => {
-    navigate(`/candidates/${candidateId}`);
+    setSelectedCandidateId(candidateId);
+    setSheetOpen(true);
   };
 
   const handleReprocess = async (candidateId: number) => {
@@ -105,7 +109,7 @@ export default function Dashboard() {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Completed</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Accepted</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center space-x-2">
@@ -117,7 +121,7 @@ export default function Dashboard() {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Failed</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Rejected</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center space-x-2">
@@ -146,6 +150,12 @@ export default function Dashboard() {
           )}
         </CardContent>
       </Card>
+      <CandidateDetailSheet
+        candidateId={selectedCandidateId}
+        open={sheetOpen}
+        onOpenChange={setSheetOpen}
+        onCandidateUpdated={fetchCandidates}
+      />
       </div>
     </MainLayout>
   );

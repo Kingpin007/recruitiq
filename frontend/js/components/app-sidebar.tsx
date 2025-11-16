@@ -1,13 +1,5 @@
 import * as React from 'react';
-import {
-  BriefcaseIcon,
-  FileText,
-  Home,
-  Settings2,
-  Upload,
-  Users,
-  LogIn,
-} from 'lucide-react';
+import { BriefcaseIcon, Home, LogIn } from 'lucide-react';
 
 import { NavMain } from '@/js/components/nav-main';
 import { NavUser } from '@/js/components/nav-user';
@@ -29,45 +21,6 @@ const navMain = [
     url: '/',
     icon: Home,
     isActive: true,
-  },
-  {
-    title: 'Upload Resumes',
-    url: '/upload',
-    icon: Upload,
-  },
-  {
-    title: 'Candidates',
-    url: '/',
-    icon: Users,
-    items: [
-      {
-        title: 'All Candidates',
-        url: '/',
-      },
-      {
-        title: 'Pending Review',
-        url: '/?status=pending',
-      },
-      {
-        title: 'Interviews',
-        url: '/?recommendation=interview',
-      },
-    ],
-  },
-  {
-    title: 'Job Descriptions',
-    url: '/admin/recruitment/jobdescription/',
-    icon: BriefcaseIcon,
-  },
-  {
-    title: 'Reports',
-    url: '#',
-    icon: FileText,
-  },
-  {
-    title: 'Settings',
-    url: '#',
-    icon: Settings2,
   },
 ];
 

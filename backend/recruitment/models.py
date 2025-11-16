@@ -33,8 +33,11 @@ class Candidate(IndexedTimeStampedModel):
     STATUS_CHOICES = [
         ("pending", "Pending"),
         ("processing", "Processing"),
-        ("completed", "Completed"),
-        ("failed", "Failed"),
+        ("completed", "Completed"),  # Automatically set when pipeline finishes
+        ("failed", "Failed"),  # Automatically set when pipeline fails
+        # Manually managed review states
+        ("processed", "Processed"),
+        ("rejected", "Rejected"),
     ]
 
     name = models.CharField(max_length=255)
@@ -77,6 +80,12 @@ class Resume(IndexedTimeStampedModel):
     file = models.FileField(upload_to="resumes/%Y/%m/%d/")
     original_filename = models.CharField(max_length=255)
     file_type = models.CharField(max_length=10)  # pdf, txt, docx
+    file_hash = models.CharField(
+        max_length=64,
+        blank=True,
+        null=True,
+        help_text="SHA-256 hash of the resume file for deduplication",
+    )
     parsed_text = models.TextField(blank=True, null=True)
     parsing_error = models.TextField(blank=True, null=True)
 
