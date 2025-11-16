@@ -38,25 +38,11 @@ for i in {1..30}; do
     sleep 2
 done
 
-# Check if frontend is ready
-echo "🔍 Checking frontend health..."
-for i in {1..30}; do
-    if curl -s http://localhost:8080 > /dev/null 2>&1; then
-        echo "✅ Frontend is ready!"
-        break
-    fi
-    if [ $i -eq 30 ]; then
-        echo "❌ Frontend failed to start. Check logs with: docker-compose logs frontend"
-        exit 1
-    fi
-    sleep 2
-done
-
 echo ""
 echo "✅ RecruitIQ is running!"
 echo ""
 echo "📊 Access the application:"
-echo "   Frontend: http://localhost:8000"
+echo "   App (React UI via Django): http://localhost:8000"
 echo "   Django Admin: http://localhost:8000/admin"
 echo ""
 echo "🔑 Default superuser credentials:"

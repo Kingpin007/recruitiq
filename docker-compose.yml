@@ -86,25 +86,6 @@ services:
       - redis
       - backend
 
-  frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile.frontend
-    command: bun run dev
-    volumes:
-      - ./frontend:/app/frontend
-      - ./webpack.config.js:/app/webpack.config.js
-      - ./tsconfig.json:/app/tsconfig.json
-      - ./package.json:/app/package.json
-      - /app/node_modules
-      - webpack-stats:/webpack-stats
-    ports:
-      - "8080:8080"
-    environment:
-      - NODE_ENV=development
-    depends_on:
-      - backend
-
 volumes:
   postgres_data:
   webpack-stats:
