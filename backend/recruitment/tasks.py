@@ -36,7 +36,11 @@ def process_candidate_task(self, candidate_id):
     start_time = time.time()
 
     try:
-        candidate = Candidate.objects.select_for_update().get(id=candidate_id)
+        # Ensure we are inside an explicit transaction when using `select_for_update`
+        # to avoid `TransactionManagementError: select_for_update cannot be used
+        # outside of a transaction`.
+        with transaction.atomic():
+            candidate = Candidate.objects.select_for_update().get(id=candidate_id)
     except Candidate.DoesNotExist:
         return {"error": f"Candidate {candidate_id} not found"}
 

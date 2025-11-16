@@ -1,3 +1,6 @@
+import asyncio
+import inspect
+
 from decouple import config
 from telegram import Bot, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.error import TelegramError
@@ -38,12 +41,19 @@ class TelegramNotifier:
         keyboard = self._create_action_keyboard(evaluation.id, candidate.id)
 
         try:
-            # Send message
+            # Send message (handle both sync and async python-telegram-bot APIs)
             response = self.bot.send_message(
-                chat_id=self.chat_id, text=message, reply_markup=keyboard, parse_mode="Markdown"
+                chat_id=self.chat_id,
+                text=message,
+                reply_markup=keyboard,
+                parse_mode="Markdown",
             )
 
-            return str(response.message_id)
+            # python-telegram-bot v20+ returns a coroutine, earlier versions return a Message
+            if inspect.iscoroutine(response):
+                response = asyncio.run(response)
+
+            return str(getattr(response, "message_id", ""))
 
         except TelegramError as e:
             raise Exception(f"Failed to send Telegram message: {e}")
@@ -132,9 +142,16 @@ class TelegramNotifier:
         """Send a simple text message."""
         try:
             response = self.bot.send_message(
-                chat_id=self.chat_id, text=text, parse_mode=parse_mode
+                chat_id=self.chat_id,
+                text=text,
+                parse_mode=parse_mode,
             )
-            return str(response.message_id)
+
+            # Handle async API (coroutine) vs sync Message instance
+            if inspect.iscoroutine(response):
+                response = asyncio.run(response)
+
+            return str(getattr(response, "message_id", ""))
         except TelegramError as e:
             raise Exception(f"Failed to send Telegram message: {e}")
 

@@ -27,9 +27,17 @@ class GitHubAnalyzer:
         - github.com/username/
         - @username (if GitHub is mentioned nearby)
         """
-        # Pattern for full GitHub URLs
-        url_pattern = r"github\.com/([a-zA-Z0-9](?:[a-zA-Z0-9]|-(?=[a-zA-Z0-9])){0,38})"
-        matches = re.findall(url_pattern, text, re.IGNORECASE)
+        # Normalise whitespace so we can handle URLs that are split across lines
+        # or have spaces around the `/`, e.g.:
+        #   "github.com/\nusername" or "github.com / username"
+        normalized_text = re.sub(r"\s+", " ", text)
+
+        # Pattern for full GitHub URLs with optional whitespace around the slash
+        url_pattern = (
+            r"github\.com\s*/\s*"
+            r"([a-zA-Z0-9](?:[a-zA-Z0-9]|-(?=[a-zA-Z0-9])){0,38})"
+        )
+        matches = re.findall(url_pattern, normalized_text, re.IGNORECASE)
 
         if matches:
             return matches[0]
