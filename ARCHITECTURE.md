@@ -47,7 +47,7 @@ RecruitIQ is a full-stack AI-powered recruitment system that processes candidate
               │  │  1. Extract Resume Text (PyPDF2)           │  │
               │  │  2. Detect GitHub Profile (Regex)          │  │
               │  │  3. Fetch GitHub Data (PyGithub)           │  │
-              │  │  4. Evaluate with AI (OpenAI GPT-4)        │  │
+              │  │  4. Evaluate with AI (OpenAI GPT-5)        │  │
               │  │  5. Generate PDF Report (ReportLab)        │  │
               │  │  6. Send Telegram Notification             │  │
               │  └────────────────────────────────────────────┘  │
@@ -208,7 +208,7 @@ RecruitIQ is a full-stack AI-powered recruitment system that processes candidate
 ### External Integrations
 
 **OpenAI GPT-4**:
-- Model: `gpt-4-turbo-preview`
+- Model: `gpt-5-nano-2025-08-07`
 - Structured output with JSON mode
 - Temperature: 0.3 (consistent results)
 - Max tokens: 3000

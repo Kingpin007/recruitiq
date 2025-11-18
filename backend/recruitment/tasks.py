@@ -62,22 +62,66 @@ def process_candidate_task(self, candidate_id):
         if not resume_text:
             raise Exception("Failed to extract resume text")
 
-        # Step 2: Detect and fetch GitHub profile
+        # Step 2: Detect GitHub profile and trigger async fetch
+        github_username = detect_github_profile(candidate_id, resume_text)
         github_data = None
-        try:
-            github_username = detect_github_profile(candidate_id, resume_text)
-            if github_username:
-                github_data = fetch_github_data(candidate_id, github_username)
-        except Exception as e:
-            log_processing_stage(
-                candidate_id,
-                "github_analysis",
-                "failed",
-                error_message=str(e),
-                message="GitHub analysis failed, continuing without it",
-            )
+        
+        # Try to get existing GitHub data if available (from previous fetch)
+        if github_username:
+            try:
+                from .models import GitHubProfile
+                github_profile = GitHubProfile.objects.filter(
+                    candidate_id=candidate_id, username=github_username
+                ).first()
+                # Check if we have valid cached GitHub data
+                if github_profile:
+                    has_repos = (
+                        github_profile.repos_data 
+                        and isinstance(github_profile.repos_data, list) 
+                        and len(github_profile.repos_data) > 0
+                    )
+                    if has_repos and not github_profile.fetch_error:
+                        # Use cached GitHub data if available
+                        # repos_data is a list of repos, analysis is the computed metrics
+                        github_data = {
+                            "profile": {},  # Profile data not stored separately, but analysis has what we need
+                            "repos": github_profile.repos_data,
+                            "analysis": github_profile.analysis or {},
+                        }
+                        log_processing_stage(
+                            candidate_id,
+                            "github_analysis",
+                            "completed",
+                            message=f"Using cached GitHub data for {github_username}",
+                        )
+                    else:
+                        # Trigger async GitHub fetch (don't wait for it)
+                        fetch_github_data_task.delay(candidate_id, github_username)
+                        log_processing_stage(
+                            candidate_id,
+                            "github_analysis",
+                            "in_progress",
+                            message=f"GitHub fetch triggered for {github_username}, proceeding without it",
+                        )
+                else:
+                    # No existing profile, trigger async GitHub fetch
+                    fetch_github_data_task.delay(candidate_id, github_username)
+                    log_processing_stage(
+                        candidate_id,
+                        "github_analysis",
+                        "in_progress",
+                        message=f"GitHub fetch triggered for {github_username}, proceeding without it",
+                    )
+            except Exception as e:
+                log_processing_stage(
+                    candidate_id,
+                    "github_analysis",
+                    "failed",
+                    error_message=str(e),
+                    message="GitHub analysis failed, continuing without it",
+                )
 
-        # Step 3: Analyze candidate with AI
+        # Step 3: Analyze candidate with AI (proceed with or without GitHub data)
         evaluation_id = analyze_candidate(candidate_id, resume_text, github_data)
         if not evaluation_id:
             raise Exception("Failed to generate candidate evaluation")
@@ -243,8 +287,9 @@ def detect_github_profile(candidate_id, resume_text):
         return None
 
 
-def fetch_github_data(candidate_id, username):
-    """Fetch and analyze GitHub profile data."""
+@shared_task(bind=True, max_retries=3, default_retry_delay=60)
+def fetch_github_data_task(self, candidate_id, username):
+    """Async task to fetch and analyze GitHub profile data."""
     start_time = time.time()
 
     try:
@@ -304,7 +349,20 @@ def fetch_github_data(candidate_id, username):
         log_processing_stage(
             candidate_id, "github_fetch", "failed", error_message=error_message
         )
+        
+        # Retry on rate limit or timeout errors
+        if "rate limit" in error_message.lower() or "timeout" in error_message.lower():
+            raise self.retry(exc=e)
+        
         raise
+
+
+def fetch_github_data(candidate_id, username):
+    """
+    Synchronous wrapper for fetch_github_data_task.
+    Kept for backward compatibility but should use the task version.
+    """
+    return fetch_github_data_task(candidate_id, username)
 
 
 def analyze_candidate(candidate_id, resume_text, github_data=None):

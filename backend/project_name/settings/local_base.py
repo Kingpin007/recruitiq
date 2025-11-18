@@ -25,8 +25,13 @@ STORAGES = {
 AUTH_PASSWORD_VALIDATORS = []  # allow easy passwords only on local
 
 # Celery
-CELERY_BROKER_URL = config("CELERY_BROKER_URL", default="")
-CELERY_TASK_ALWAYS_EAGER = True
+# Use REDIS_URL from docker-compose (or CELERY_BROKER_URL if explicitly set)
+# This matches the pattern used in production settings
+CELERY_BROKER_URL = config("CELERY_BROKER_URL", default="") or config("REDIS_URL", default="")
+CELERY_RESULT_BACKEND = config("REDIS_URL", default="")
+# Only use eager mode if no broker is configured (for testing without Redis/RabbitMQ)
+# If a broker is configured (via REDIS_URL in docker-compose), tasks will run asynchronously
+CELERY_TASK_ALWAYS_EAGER = not bool(CELERY_BROKER_URL)
 CELERY_TASK_EAGER_PROPAGATES = True
 
 # Email settings for development - print emails to console

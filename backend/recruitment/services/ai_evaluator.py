@@ -15,7 +15,7 @@ class AIEvaluator:
             raise ValueError("OPENAI_API_KEY environment variable is not set")
         openai.api_key = self.api_key
         self.client = openai.OpenAI(api_key=self.api_key)
-        self.model = config("OPENAI_MODEL", default="gpt-4-turbo-preview")
+        self.model = config("OPENAI_MODEL", default="gpt-5-nano-2025-08-07")
         self.max_retries = 3
         self.retry_delay = 2
 
@@ -44,8 +44,6 @@ class AIEvaluator:
                         },
                         {"role": "user", "content": prompt},
                     ],
-                    temperature=0.3,
-                    max_tokens=3000,
                     response_format={"type": "json_object"},
                 )
 
